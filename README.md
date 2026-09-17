@@ -6,18 +6,20 @@ A static, playful "sketchbook" themed website for Karpanai Foundation, built wit
 
 ```
 karpanai/
-├── index.html          Home
-├── our-story.html       Our Story / About
-├── what-we-do.html      Programmes
-├── impact.html          Impact & stats
-├── stories.html         Stories from the Studio (+ drawing canvas)
-├── get-involved.html    Partner / Volunteer / Facilitate / Support
-├── donate.html          Donate
-├── contact.html         Contact form
-├── css/style.css        Full design system (colours, type, components)
-├── js/main.js           All jQuery interactions
-└── assets/logo.jpg      Karpanai logo
+├── index.html              Home
+├── our-story/index.html     Our Story / About
+├── what-we-do/index.html    Programmes
+├── impact/index.html        Impact & stats
+├── stories/index.html       Stories from the Studio (+ drawing canvas)
+├── get-involved/index.html  Partner / Volunteer / Facilitate / Support
+├── donate/index.html        Donate
+├── contact/index.html       Contact form
+├── css/style.css            Full design system (colours, type, components)
+├── js/main.js               All jQuery interactions
+└── assets/logo.jpg          Karpanai logo
 ```
+
+Each inner page lives in its own folder as `index.html` so it serves at a clean, extension-less URL (e.g. `/contact/` instead of `/contact.html`).
 
 ## Design notes
 
@@ -43,12 +45,12 @@ karpanai/
 5. Under **Branch**, choose `main` and folder `/ (root)`, then **Save**.
 6. Your site will be live at `https://<your-username>.github.io/<repo-name>/` within a minute or two.
 
-No further configuration is needed — every link in the site is a relative path (`index.html`, `css/style.css`, etc.), so it works the same locally, on Pages, or on any static host.
+No further configuration is needed — every link in the site is a relative path (`./`, `../css/style.css`, etc.), so it works the same locally, on Pages, or on any static host.
 
 ## Things to fill in before launch
 
-- `donate.html` — real UPI ID, bank account details, IFSC, and a donation QR code image (currently placeholders).
-- `contact.html` — the form currently shows a friendly success message on submit but does not send anywhere. Wire it to Google Forms, Formspree, Netlify Forms, or your backend of choice by updating the `<form>` action in `partials` logic / `contact.html` and the submit handler in `js/main.js`.
+- `donate/index.html` — real UPI ID, bank account details, IFSC, and a donation QR code image (currently placeholders).
+- `contact/index.html` — the contact form is a button linking out to Google Forms (`https://forms.gle/n31mEGHjFD6ANVn47`). To point it at a different form, update that link's `href`.
 - Swap in real photography/artwork where the SVG doodles are used as placeholders, if you'd like a more photographic feel.
 - `assets/logo.jpg` — replace with a transparent PNG/SVG version of the logo if available, for cleaner rendering on colored backgrounds.
 

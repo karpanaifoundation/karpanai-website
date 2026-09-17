@@ -1,5 +1,5 @@
 /* ==========================================================================
-   KARPANAI FOUNDATION — main.js
+   KARPANAI FOUNDATION - main.js
    jQuery-powered playful interactions
    ========================================================================== */
 $(function () {
@@ -14,10 +14,13 @@ $(function () {
   });
 
   /* ---------------- Active nav link ---------------- */
-  var here = (location.pathname.split('/').pop() || 'index.html');
+  var here = location.pathname.replace(/\/index\.html$/, '/');
+  if (here.slice(-1) !== '/') here += '/';
   $('.nav-links a').each(function () {
-    var href = $(this).attr('href');
-    if (href === here || (here === '' && href === 'index.html')) {
+    var link = $(this).attr('href');
+    var target = new URL(link, location.href).pathname;
+    if (target.slice(-1) !== '/') target += '/';
+    if (target === here) {
       $(this).addClass('active');
     }
   });
@@ -78,26 +81,53 @@ $(function () {
 
   /* ---------------- Subject picker (home hero interactive) ---------------- */
   var subjectData = {
-    history:  { title: 'History → Theatre', text: 'Your students step inside a historical moment and play it out — not memorise the date it happened.' },
-    geography:{ title: 'Geography → Song', text: 'Maps turn into melodies. Students write songs about the places, rivers and neighbourhoods they actually live in.' },
-    civics:   { title: 'Civics → Debate', text: 'The Constitution stops being a chapter to recite. Students argue, defend and roleplay the rights they are learning about.' },
-    justice:  { title: 'Social Justice → Story', text: 'Big issues get a human face. Students write short stories that explore the fairness questions around them.' },
-    identity: { title: 'Identity → Poem', text: 'Who am I, and where do I belong? Students find the words for it — often for the first time.' }
+    history: {
+      title: 'History → Theatre',
+      text: 'What if Kovalan walked the streets of Chennai today? Picture a descriptive animation of him walking with the anklet - and on his way to the king, it either gets lost along the way, or the king turns out to have a cheap copy of his own, thanks to inflation.'
+    },
+    geography: {
+      title: 'Geography → Music',
+      text: 'Writing a song about a piece of geography - a couple of lines on the rich heritage of Chennai\'s soil.'
+    },
+    civics: {
+      title: 'Civics → Debate',
+      text: 'An example of a Model United Nations in action - with more from the session in our drive.',
+      link: 'https://drive.google.com/file/d/1HLOJDf0hkhMHUpPTcUO_064eMw_Vx3mC/view?usp=sharing'
+    },
+    social: {
+      title: 'Social Issues → Art',
+      text: 'Some political art - theatre pictures, and books like Pink World, written by Karthik, on discrimination and more.'
+    }
   };
   var $pickerBtns = $('.picker-btn');
   var $stageTitle = $('#pickerTitle');
   var $stageText = $('#pickerText');
-  $pickerBtns.on('click', function () {
-    var key = $(this).data('subject');
+  var $stageLink = $('#pickerLink');
+
+  function showSubject(key) {
     if (!subjectData[key]) return;
-    $pickerBtns.removeClass('active');
-    $(this).addClass('active');
+    $pickerBtns.removeClass('active').filter('[data-subject="' + key + '"]').addClass('active');
     $stageTitle.fadeOut(120, function () {
       $stageTitle.text(subjectData[key].title).fadeIn(180);
     });
     $stageText.fadeOut(120, function () {
       $stageText.text(subjectData[key].text).fadeIn(180);
     });
+    if (subjectData[key].link) {
+      $stageLink.attr('href', subjectData[key].link).show();
+    } else {
+      $stageLink.hide();
+    }
+  }
+
+  $pickerBtns.on('click', function () {
+    showSubject($(this).data('subject'));
+  });
+
+  $('.chip-link').on('click', function (e) {
+    e.preventDefault();
+    showSubject($(this).data('subject'));
+    $('html, body').animate({ scrollTop: $('#picker').offset().top - 30 }, 500);
   });
 
   /* ---------------- Flipbook (Method section) ---------------- */
@@ -220,5 +250,101 @@ $(function () {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     });
   }
+
+  /* ---------------- Scrapbook lightbox (full-screen photo/artifact viewer) ---------------- */
+  var $lightbox, currentGroup = [], currentIndex = 0;
+
+  function buildLightbox() {
+    if ($lightbox) return;
+    $lightbox = $(
+      '<div class="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">' +
+        '<div class="lightbox-figure">' +
+          '<img class="lightbox-img" alt="">' +
+          '<p class="lightbox-cap"></p>' +
+          '<span class="lightbox-counter"></span>' +
+          '<button type="button" class="lightbox-btn lightbox-close" aria-label="Close">✕</button>' +
+          '<button type="button" class="lightbox-btn lightbox-prev" aria-label="Previous image">‹</button>' +
+          '<button type="button" class="lightbox-btn lightbox-next" aria-label="Next image">›</button>' +
+          '<button type="button" class="lightbox-btn lightbox-full" aria-label="Toggle fullscreen">⛶</button>' +
+        '</div>' +
+      '</div>'
+    ).appendTo('body');
+
+    $lightbox.on('click', function (e) {
+      if (e.target === this) closeLightbox();
+    });
+    $lightbox.find('.lightbox-close').on('click', closeLightbox);
+    $lightbox.find('.lightbox-prev').on('click', function () { showSlide(currentIndex - 1); });
+    $lightbox.find('.lightbox-next').on('click', function () { showSlide(currentIndex + 1); });
+    $lightbox.find('.lightbox-full').on('click', function () {
+      var el = $lightbox[0];
+      var request = el.requestFullscreen || el.webkitRequestFullscreen;
+      var exit = document.exitFullscreen || document.webkitExitFullscreen;
+      if (!document.fullscreenElement && request) {
+        request.call(el);
+      } else if (exit) {
+        exit.call(document);
+      }
+    });
+
+    var touchStartX = null;
+    $lightbox.find('.lightbox-figure').on('touchstart', function (e) {
+      touchStartX = e.originalEvent.touches[0].clientX;
+    }).on('touchend', function (e) {
+      if (touchStartX === null) return;
+      var dx = e.originalEvent.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) > 40) showSlide(currentIndex + (dx < 0 ? 1 : -1));
+      touchStartX = null;
+    });
+  }
+
+  function showSlide(i) {
+    if (!currentGroup.length) return;
+    currentIndex = (i + currentGroup.length) % currentGroup.length;
+    var item = currentGroup[currentIndex];
+    $lightbox.find('.lightbox-img').attr('src', item.full).attr('alt', item.caption || '');
+    $lightbox.find('.lightbox-cap').text(item.caption || '');
+    $lightbox.find('.lightbox-counter').text((currentIndex + 1) + ' / ' + currentGroup.length);
+    var multi = currentGroup.length > 1;
+    $lightbox.find('.lightbox-prev, .lightbox-next').toggle(multi);
+  }
+
+  function openLightbox(group, index) {
+    buildLightbox();
+    currentGroup = group;
+    showSlide(index);
+    $lightbox.addClass('open');
+    $('body').css('overflow', 'hidden');
+  }
+
+  function closeLightbox() {
+    if (!$lightbox) return;
+    $lightbox.removeClass('open');
+    $('body').css('overflow', '');
+    var exit = document.exitFullscreen || document.webkitExitFullscreen;
+    if (document.fullscreenElement && exit) exit.call(document);
+  }
+
+  $(document).on('keydown', function (e) {
+    if (!$lightbox || !$lightbox.hasClass('open')) return;
+    if (e.key === 'Escape') closeLightbox();
+    if (e.key === 'ArrowLeft') showSlide(currentIndex - 1);
+    if (e.key === 'ArrowRight') showSlide(currentIndex + 1);
+  });
+
+  $('.scrap-gallery').each(function () {
+    var $items = $(this).find('.scrap-item[data-full]');
+    var group = [];
+    $items.each(function (i) {
+      $(this).attr({ 'data-idx': i, tabindex: 0, role: 'button' });
+      group.push({ full: $(this).data('full'), caption: $(this).data('caption') || '' });
+    });
+    $items.on('click', function (e) {
+      e.preventDefault();
+      openLightbox(group, $(this).data('idx'));
+    }).on('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $(this).trigger('click'); }
+    });
+  });
 
 });
