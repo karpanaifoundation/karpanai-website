@@ -808,8 +808,8 @@ section{ position:relative; padding: 78px 0; z-index:1; }
   border: 1px solid var(--line);
 }
 /* for wide banner/document images that would lose their text if cropped */
-.scrap-item-wide{ width: 340px; }
-.scrap-item-wide .scrap-photo{ height: 112px; object-fit: contain; }
+.scrap-item-wide{ width: 100%; max-width: 460px; }
+.scrap-item-wide .scrap-photo{ height: auto; object-fit: unset; }
 .scrap-cap{
   padding: 12px 4px 16px;
   font-family: var(--font-hand);
@@ -873,8 +873,7 @@ section{ position:relative; padding: 78px 0; z-index:1; }
 @media (max-width: 560px){
   .scrap-item{ width: 44vw; }
   .scrap-photo{ height: 34vw; }
-  .scrap-item-wide{ width: 84vw; }
-  .scrap-item-wide .scrap-photo{ height: 27vw; }
+  .scrap-item-wide{ width: 100%; }
 }
 
 /* ---------- Lightbox ---------- */
@@ -937,3 +936,42 @@ section{ position:relative; padding: 78px 0; z-index:1; }
   .lightbox-close{ top:8px; right:8px; }
   .lightbox-full{ bottom:8px; right:8px; }
 }
+
+/* founder portrait - a clean, untilted variant of .scrap-item */
+.scrap-item.scrap-portrait{
+  width: 100%;
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 0;
+  border-radius: var(--radius);
+  transform: none !important;
+  box-shadow: 8px 8px 0 rgba(20,54,73,.18);
+}
+.scrap-item.scrap-portrait:hover{
+  transform: translateY(-5px) !important;
+  box-shadow: 10px 13px 0 rgba(20,54,73,.22);
+}
+.scrap-item.scrap-portrait .scrap-photo{
+  height: auto;
+  border: 0;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.scrap-item.scrap-portrait .scrap-cap{
+  font-family: var(--font-head);
+  font-weight: 600;
+  font-size: 1rem;
+}
+.founder-milestones{
+  display:flex; flex-wrap:wrap; gap: 10px 14px;
+  margin: 14px 0 18px;
+  font-family: var(--font-head);
+  font-size: .9rem;
+}
+.founder-milestones span{
+  display:inline-flex; align-items:center; gap:6px;
+  background: var(--paper-dim);
+  border: 1.5px dashed var(--ink);
+  border-radius: 999px;
+  padding: .4em 1em;
+}
+.founder-milestones b{ color: var(--coral); font-weight:600; }
