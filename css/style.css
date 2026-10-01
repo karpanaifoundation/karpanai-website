@@ -280,7 +280,27 @@ a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visib
 }
 .hero-art{
   position:relative;
+  min-height: 420px;
+  display:flex;
+  align-items:center;
 }
+.hero-art-blob{
+  position:absolute;
+  top:50%; left:50%;
+  width:92%;
+  aspect-ratio: 1/1;
+  transform: translate(-50%,-50%);
+  border-radius:50%;
+  background: var(--yellow-soft);
+  opacity:.55;
+}
+.scrap-item.hero-photo{
+  width:100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.hero-photo .scrap-photo{ height:auto; }
+.scrap-item.floaty:hover{ animation-play-state: paused; }
 .floaty{ animation: floaty 5s ease-in-out infinite; }
 @keyframes floaty{
   0%,100%{ transform: translateY(0) rotate(var(--r,0deg)); }
