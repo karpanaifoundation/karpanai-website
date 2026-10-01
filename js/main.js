@@ -5,12 +5,19 @@
 $(function () {
 
   /* ---------------- Mobile nav toggle ---------------- */
+  function setNavOpen(open) {
+    $('#navLinks').toggleClass('open', open);
+    $('#navToggle').toggleClass('open', open).attr('aria-expanded', open);
+    $('body').toggleClass('nav-locked', open);
+  }
   $('#navToggle').on('click', function () {
-    $('#navLinks').toggleClass('open');
-    $(this).attr('aria-expanded', $('#navLinks').hasClass('open'));
+    setNavOpen(!$('#navLinks').hasClass('open'));
   });
   $('#navLinks a').on('click', function () {
-    $('#navLinks').removeClass('open');
+    setNavOpen(false);
+  });
+  $(document).on('keydown', function (e) {
+    if (e.key === 'Escape') setNavOpen(false);
   });
 
   /* ---------------- Active nav link ---------------- */
